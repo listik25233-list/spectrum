@@ -1,0 +1,64 @@
+name: spectrum
+description: A cross-platform music aggregator unifying all streaming services.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.6.1
+
+  # Local database
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+  path_provider: ^2.1.5
+
+  # Networking
+  dio: ^5.8.0+1
+
+  # Auth / OAuth
+  flutter_web_auth_2: ^3.1.2
+  flutter_secure_storage: ^10.0.0
+
+  # Audio
+  audio_session: ^0.1.21
+
+  # Offline / Background
+  connectivity_plus: ^6.1.4
+  workmanager: ^0.5.2
+
+  # Utilities
+  crypto: ^3.0.6
+  equatable: ^2.0.7
+  logger: ^2.5.0
+  intl: ^0.20.2
+
+  # UI
+  cupertino_icons: ^1.0.8
+  cached_network_image: ^3.4.1
+  animations: ^2.0.11
+  youtube_explode_dart: ^3.0.5
+  media_kit: ^1.2.6
+  media_kit_libs_video: ^1.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  isar_generator: ^3.1.0+1
+  build_runner: ^2.4.13
+  # Note: isar_generator + build_runner are added separately when running
+  # code generation, due to analyzer version conflicts with other codegen tools.
+  # Run: flutter pub add dev:isar_generator dev:build_runner
+  # Then: flutter pub run build_runner build
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
