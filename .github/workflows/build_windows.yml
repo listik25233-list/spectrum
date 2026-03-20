@@ -29,7 +29,13 @@ jobs:
 
       - name: Package Release
         run: |
-          Compress-Archive -Path build/windows/x64/release/runner/* -DestinationPath spectrum_windows.zip
+          $path = (Get-ChildItem -Path build/windows -Filter spectrum.exe -Recurse | Where-Object { $_.FullName -like "*release*" } | Select-Object -First 1).DirectoryName
+          if (-not $path) { 
+            Write-Error "Could not find spectrum.exe in build/windows"
+            exit 1 
+          }
+          Write-Output "Packaging files from: $path"
+          Compress-Archive -Path "$path\*" -DestinationPath spectrum_windows.zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
