@@ -21,21 +21,27 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Clean build environment
+        run: flutter clean
+
       - name: Code generation (Isar)
-        run: flutter pub run build_runner build --delete-conflicting-outputs
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+        continue-on-error: false
 
       - name: Build Windows
-        run: flutter build windows --release
+        run: flutter build windows --release --no-pub
 
       - name: Package Release
+        shell: pwsh
         run: |
-          $path = (Get-ChildItem -Path build/windows -Filter spectrum.exe -Recurse | Where-Object { $_.FullName -like "*release*" } | Select-Object -First 1).DirectoryName
-          if (-not $path) { 
-            Write-Error "Could not find spectrum.exe in build/windows"
-            exit 1 
+          $releaseDir = "build/windows/runner/Release"
+          if (Test-Path $releaseDir) {
+            Compress-Archive -Path "$releaseDir\*" -DestinationPath spectrum_windows.zip
+          } else {
+            Write-Error "Release directory not found at $releaseDir"
+            exit 1
           }
-          Write-Output "Packaging files from: $path"
-          Compress-Archive -Path "$path\*" -DestinationPath spectrum_windows.zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
