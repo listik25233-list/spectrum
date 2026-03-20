@@ -14,7 +14,17 @@ class IsarService {
   static Isar get instance => _isar;
 
   static Future<void> init() async {
-    final dir = await getApplicationDocumentsDirectory();
+    Directory? dir;
+    try {
+      // getApplicationSupportDirectory maps to AppData/Roaming on Windows/Wine, 
+      // which is the most reliable place for database files.
+      dir = await getApplicationSupportDirectory().timeout(const Duration(seconds: 5));
+    } catch (e) {
+      print("Error getting support directory: $e");
+      dir = Directory.current;
+    }
+
+    final path = dir.path;
     _isar = await Isar.open(
       [
         TrackSchema,
@@ -22,7 +32,7 @@ class IsarService {
         PendingActionSchema,
         AuthTokenSchema,
       ],
-      directory: dir.path,
+      directory: path,
       name: 'spectrum_db',
     );
   }
