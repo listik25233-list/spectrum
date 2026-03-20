@@ -29,11 +29,11 @@ final audioPlayerServiceProvider = Provider<AudioPlayerService>((ref) {
   return service;
 });
 
-enum RepeatMode { off, all, one }
+enum PlayerRepeatMode { off, all, one }
 
 final currentQueueProvider = StateProvider<List<Track>>((ref) => []);
 final isShufflingProvider = StateProvider<bool>((ref) => false);
-final repeatModeProvider = StateProvider<RepeatMode>((ref) => RepeatMode.off);
+final repeatModeProvider = StateProvider<PlayerRepeatMode>((ref) => PlayerRepeatMode.off);
 final queueIndexProvider = StateProvider<int>((ref) => -1);
 
 final currentTrackProvider = StateProvider<Track?>((ref) => null);
@@ -133,7 +133,7 @@ class AudioPlayerService {
 
   void _handleTrackCompleted() {
     final repeatMode = _ref.read(repeatModeProvider);
-    if (repeatMode == RepeatMode.one) {
+    if (repeatMode == PlayerRepeatMode.one) {
       // Replay same track
       _player.seek(Duration.zero);
       _player.play();
@@ -193,7 +193,7 @@ class AudioPlayerService {
     
     index++;
     if (index >= queue.length) {
-      if (_ref.read(repeatModeProvider) == RepeatMode.all) {
+      if (_ref.read(repeatModeProvider) == PlayerRepeatMode.all) {
         index = 0;
       } else {
         // Queue finished
@@ -223,7 +223,7 @@ class AudioPlayerService {
     
     index--;
     if (index < 0) {
-      if (_ref.read(repeatModeProvider) == RepeatMode.all) {
+      if (_ref.read(repeatModeProvider) == PlayerRepeatMode.all) {
         index = queue.length - 1;
       } else {
         index = 0;

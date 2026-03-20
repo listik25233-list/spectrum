@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:flutter/material.dart' hide RepeatMode;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -356,9 +356,9 @@ class _FullPlayerScreenState extends ConsumerState<FullPlayerScreen>
                       IconButton(
                         iconSize: 28,
                         icon: Icon(_repeatIconData(repeatMode)),
-                        color: repeatMode == RepeatMode.off ? Colors.white54 : Theme.of(context).colorScheme.primary,
+                        color: repeatMode == PlayerRepeatMode.off ? Colors.white54 : Theme.of(context).colorScheme.primary,
                         onPressed: () {
-                          final next = RepeatMode.values[(repeatMode.index + 1) % RepeatMode.values.length];
+                          final next = PlayerRepeatMode.values[(repeatMode.index + 1) % PlayerRepeatMode.values.length];
                           ref.read(repeatModeProvider.notifier).state = next;
                         },
                       ),
@@ -471,13 +471,12 @@ class _FullPlayerScreenState extends ConsumerState<FullPlayerScreen>
     );
   }
 
-  IconData _repeatIconData(RepeatMode mode) {
+  IconData _repeatIconData(PlayerRepeatMode mode) {
     switch (mode) {
-      case RepeatMode.one:
+      case PlayerRepeatMode.one:
         return Icons.repeat_one_rounded;
-      case RepeatMode.all:
-        return Icons.repeat_rounded;
-      case RepeatMode.off:
+      case PlayerRepeatMode.all:
+      case PlayerRepeatMode.off:
         return Icons.repeat_rounded;
     }
   }

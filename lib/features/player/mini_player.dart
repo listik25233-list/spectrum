@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' hide RepeatMode;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:spectrum/features/player/audio_player_service.dart';
@@ -195,7 +195,7 @@ class MiniPlayer extends ConsumerWidget {
                           icon: _buildRepeatIcon(ref),
                           onPressed: () {
                             final current = ref.read(repeatModeProvider);
-                            final next = RepeatMode.values[(current.index + 1) % RepeatMode.values.length];
+                            final next = PlayerRepeatMode.values[(current.index + 1) % PlayerRepeatMode.values.length];
                             ref.read(repeatModeProvider.notifier).state = next;
                           },
                         ),
@@ -218,15 +218,15 @@ class MiniPlayer extends ConsumerWidget {
     Color color;
 
     switch (mode) {
-      case RepeatMode.off:
+      case PlayerRepeatMode.off:
         iconData = Icons.repeat_rounded;
         color = Colors.white54;
         break;
-      case RepeatMode.all:
+      case PlayerRepeatMode.all:
         iconData = Icons.repeat_rounded;
         color = Theme.of(ref.context).colorScheme.primary;
         break;
-      case RepeatMode.one:
+      case PlayerRepeatMode.one:
         iconData = Icons.repeat_one_rounded;
         color = Theme.of(ref.context).colorScheme.primary;
         break;
