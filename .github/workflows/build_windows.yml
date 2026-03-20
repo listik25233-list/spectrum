@@ -19,7 +19,9 @@ jobs:
             channel: 'stable'
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          flutter config --enable-windows-desktop
+          flutter pub get
 
       - name: Clean build environment
         run: flutter clean
@@ -30,7 +32,7 @@ jobs:
         continue-on-error: false
 
       - name: Build Windows
-        run: flutter build windows --release --no-pub
+        run: flutter build windows --release
 
       - name: Package Release
         shell: pwsh
