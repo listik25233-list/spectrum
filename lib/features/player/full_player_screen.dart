@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -476,6 +476,7 @@ class _FullPlayerScreenState extends ConsumerState<FullPlayerScreen>
       case RepeatMode.one:
         return Icons.repeat_one_rounded;
       case RepeatMode.all:
+        return Icons.repeat_rounded;
       case RepeatMode.off:
         return Icons.repeat_rounded;
     }
