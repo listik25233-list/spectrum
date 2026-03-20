@@ -1,0 +1,38 @@
+name: Build Windows Release
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+            flutter-version: '3.x'
+            channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Code generation (Isar)
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build Windows
+        run: flutter build windows --release
+
+      - name: Package Release
+        run: |
+          Compress-Archive -Path build/windows/x64/release/runner/* -DestinationPath spectrum_windows.zip
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: spectrum-windows-release
+          path: spectrum_windows.zip
