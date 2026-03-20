@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -32,7 +32,7 @@ jobs:
           Compress-Archive -Path build/windows/x64/release/runner/* -DestinationPath spectrum_windows.zip
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: spectrum-windows-release
           path: spectrum_windows.zip

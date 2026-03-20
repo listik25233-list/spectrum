@@ -1,1 +1,0 @@
- /home/listik/Документы/Spectrum/.dart_tool/flutter_build/46fc9b74f5783d7e7cf37c60926194b8/native_assets.json: 
