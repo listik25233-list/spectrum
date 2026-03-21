@@ -37,11 +37,14 @@ jobs:
       - name: Package Release
         shell: pwsh
         run: |
-          $releaseDir = "build/windows/runner/Release"
+          $releaseDir = "build/windows/x64/runner/Release"
+          if (-not (Test-Path $releaseDir)) {
+             $releaseDir = "build/windows/runner/Release" # Fallback
+          }
           if (Test-Path $releaseDir) {
             Compress-Archive -Path "$releaseDir\*" -DestinationPath spectrum_windows.zip
           } else {
-            Write-Error "Release directory not found at $releaseDir"
+            Write-Error "Release directory not found anywhere!"
             exit 1
           }
 
