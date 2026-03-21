@@ -15,26 +15,36 @@ class IsarService {
   static Isar get instance => _isar;
 
   static Future<void> init() async {
-    Directory? dir;
+    String? finalPath;
     try {
-      // getApplicationSupportDirectory maps to AppData/Roaming on Windows/Wine, 
-      // which is the most reliable place for database files.
-      dir = await getApplicationSupportDirectory().timeout(const Duration(seconds: 5));
+      // 1. Try AppSupport (AppData/Roaming) - best for Windows
+      final supportDir = await getApplicationSupportDirectory().timeout(const Duration(seconds: 3));
+      finalPath = supportDir.path;
     } catch (e) {
-      print("Error getting support directory: $e");
-      dir = Directory.current;
+      // 2. Fallback to a very simple path that Wine usually likes
+      finalPath = 'C:\\spectrum_db'; 
     }
 
-    final path = dir.path;
-    _isar = await Isar.open(
-      [
-        TrackSchema,
-        PlaylistSchema,
-        PendingActionSchema,
-        AuthTokenSchema,
-      ],
-      directory: path,
-      name: 'spectrum_db',
-    );
+    // Ensure directory exists manually
+    final directory = Directory(finalPath);
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+
+    try {
+      _isar = await Isar.open(
+        [
+          TrackSchema,
+          PlaylistSchema,
+          PendingActionSchema,
+          AuthTokenSchema,
+        ],
+        directory: finalPath,
+        name: 'spectrum_db',
+      );
+    } catch (e) {
+      // If it still fails, wrap the error with the path info for debugging
+      throw "Isar failed to open at $finalPath. Error: $e";
+    }
   }
 }
