@@ -17,34 +17,40 @@ class IsarService {
   static Future<void> init() async {
     String? finalPath;
     try {
-      // 1. Try AppSupport (AppData/Roaming) - best for Windows
       final supportDir = await getApplicationSupportDirectory().timeout(const Duration(seconds: 3));
       finalPath = supportDir.path;
     } catch (e) {
-      // 2. Fallback to a very simple path that Wine usually likes
       finalPath = 'C:\\spectrum_db'; 
     }
 
-    // Ensure directory exists manually
-    final directory = Directory(finalPath);
+    // Try to open first time
+    try {
+      _isar = await _openIsar(finalPath);
+    } catch (e) {
+      // If failed (MdbxError 775), try a "safe" path in the root of C:
+      final fallbackPath = 'C:\\spectrum_db';
+      if (finalPath == fallbackPath) rethrow; // Already tried fallback
+
+      print("Isar failed at $finalPath, trying fallback: $fallbackPath");
+      _isar = await _openIsar(fallbackPath);
+    }
+  }
+
+  static Future<Isar> _openIsar(String path) async {
+    final directory = Directory(path);
     if (!await directory.exists()) {
       await directory.create(recursive: true);
     }
 
-    try {
-      _isar = await Isar.open(
-        [
-          TrackSchema,
-          PlaylistSchema,
-          PendingActionSchema,
-          AuthTokenSchema,
-        ],
-        directory: finalPath,
-        name: 'spectrum_db',
-      );
-    } catch (e) {
-      // If it still fails, wrap the error with the path info for debugging
-      throw "Isar failed to open at $finalPath. Error: $e";
-    }
+    return await Isar.open(
+      [
+        TrackSchema,
+        PlaylistSchema,
+        PendingActionSchema,
+        AuthTokenSchema,
+      ],
+      directory: path,
+      name: 'spectrum_db',
+    );
   }
 }
