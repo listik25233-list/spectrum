@@ -19,11 +19,9 @@ class IsarService {
   static Future<void> init() async {
     String? finalPath;
     try {
-      // Use ApplicationSupport on Linux/Android, but for Windows we want a more stable path
       final dir = await getApplicationSupportDirectory();
       finalPath = '${dir.path}${Platform.isWindows ? '\\db' : '/db'}';
     } catch (e) {
-      // Ultimate fallback: Documents folder (always has write access)
       final docDir = await getApplicationDocumentsDirectory();
       finalPath = '${docDir.path}${Platform.isWindows ? '\\Spectrum\\db' : '/Spectrum/db'}';
     }
@@ -31,12 +29,28 @@ class IsarService {
     try {
       _isar = await _openIsar(finalPath);
     } catch (e) {
-      // Final attempt with a unique fallback if the above is locked
-      final tempDir = await getTemporaryDirectory();
-      final fallbackPath = '${tempDir.path}${Platform.isWindows ? '\\spectrum_db_emergency' : '/spectrum_db_emergency'}';
-      
-      print('Isar normal init failed: $e. Trying emergency path: $fallbackPath');
-      _isar = await _openIsar(fallbackPath);
+      // 1. Try to clean up lock file if it exists
+      try {
+        final lockFile = File('$finalPath${Platform.isWindows ? '\\' : '/'}spectrum_db.isar.lock');
+        if (lockFile.existsSync()) {
+          lockFile.deleteSync();
+        }
+      } catch (_) {}
+
+      try {
+        // 2. Try opening again after cleanup
+        _isar = await _openIsar(finalPath);
+      } catch (e2) {
+        // 3. Last chance: truly unique emergency path in Temp
+        try {
+          final tempDir = await getTemporaryDirectory();
+          final emergencyPath = '${tempDir.path}${Platform.isWindows ? '\\spectrum_emergency_${DateTime.now().millisecondsSinceEpoch}' : '/spectrum_emergency'}';
+          _isar = await _openIsar(emergencyPath);
+        } catch (e3) {
+          // If EVERYTHING fails, rethrow with the path for user diagnosis
+          throw 'IsarError: Cannot open Environment: $e2\nPath attempted: $finalPath';
+        }
+      }
     }
   }
 
