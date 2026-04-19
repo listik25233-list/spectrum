@@ -10,15 +10,20 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Configure Git for Symlinks
-        run: git config --global core.symlinks true
+      - name: Configure Git for Symlinks and Long Paths
+        run: |
+          git config --global core.symlinks true
+          git config --global core.longpaths true
         shell: bash
 
       - uses: actions/checkout@v4
 
-      - name: Enable Windows Developer Mode
+      - name: Enable Windows Long Paths and Developer Mode
         shell: pwsh
         run: |
+          # Enable Long Paths
+          reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem" /v "LongPathsEnabled" /t REG_DWORD /d 1 /f
+          # Enable Developer Mode
           reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /v "AllowDevelopmentWithoutDevLicense" /d 1 /f
 
       - name: Setup Flutter
@@ -53,7 +58,18 @@ jobs:
           flutter_rust_bridge_codegen generate
 
       - name: Build Windows
-        run: flutter build windows --release
+        shell: pwsh
+        run: |
+          # Use a verbose-ish build to see what is happening during INSTALL
+          flutter build windows --release -v
+
+      - name: Diagnostic (on failure)
+        if: failure()
+        shell: pwsh
+        run: |
+          Write-Host "Listing build directory contents for debugging..."
+          if (Test-Path build/windows) { Get-ChildItem -Path build/windows -Recurse -Depth 2 }
+          if (Test-Path windows/flutter/ephemeral) { Get-ChildItem -Path windows/flutter/ephemeral -Recurse -Depth 1 }
 
       - name: Package Release
         shell: pwsh
