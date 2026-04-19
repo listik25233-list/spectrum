@@ -47,9 +47,11 @@ lib/generated_plugin_registrant.dart
 # Meta & Build Artifacts
 .gemini/
 .env
-*.ps1
 **/target*/
 **/build/
 .pub-cache/
 .dart-tool/
 .flutter-plugins*
+
+# Allow Cargokit scripts
+!**/resolve_symlinks.ps1
