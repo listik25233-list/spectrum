@@ -16,7 +16,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
             channel: 'stable'
-            # version: '' # Omit to get the latest stable
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -26,19 +25,10 @@ jobs:
       - name: Install LLVM (Clang)
         run: choco install llvm -y
 
-      - name: Install Binary Installer (binstall)
-        shell: pwsh
-        run: |
-          # Use binstall to get precompiled frb_codegen (saves time)
-          powershell -ExecutionPolicy ByPass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $tag = (Invoke-RestMethod https://api.github.com/repos/cargo-bins/cargo-binstall/releases/latest).tag_name; iwr https://github.com/cargo-bins/cargo-binstall/releases/download/$tag/cargo-binstall-x86_64-pc-windows-msvc.zip -OutFile binstall.zip"
-          Expand-Archive -Path binstall.zip -DestinationPath .
-          mv cargo-binstall.exe $HOME\.cargo\bin\
-
       - name: Install FRB Codegen
-        shell: pwsh
-        run: |
-          $env:PATH += ";$HOME\.cargo\bin"
-          cargo binstall flutter_rust_bridge_codegen@2.7.0 -y
+        uses: taiki-e/install-action@v2
+        with:
+          tool: flutter_rust_bridge_codegen@2.7.0
 
       - name: Install Flutter Dependencies
         run: |
@@ -48,17 +38,13 @@ jobs:
       - name: Code Generation
         shell: pwsh
         run: |
-          $env:PATH += ";$HOME\.cargo\bin"
           # 1. Isar
           dart run build_runner build --delete-conflicting-outputs
           # 2. FRB
           flutter_rust_bridge_codegen generate
 
       - name: Build Windows
-        shell: pwsh
-        run: |
-          $env:PATH += ";$HOME\.cargo\bin"
-          flutter build windows --release
+        run: flutter build windows --release
 
       - name: Package Release
         shell: pwsh
@@ -68,10 +54,9 @@ jobs:
              $releaseDir = "build/windows/runner/Release" 
           }
           if (Test-Path $releaseDir) {
-            # Combine all release files into a zip
             Compress-Archive -Path "$releaseDir\*" -DestinationPath spectrum_windows_x64.zip
           } else {
-            Write-Error "CRITICAL: Release directory not found! Build likely failed silently."
+            Write-Error "CRITICAL: Release directory not found!"
             exit 1
           }
 
