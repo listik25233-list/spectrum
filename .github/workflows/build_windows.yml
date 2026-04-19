@@ -10,7 +10,16 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Configure Git for Symlinks
+        run: git config --global core.symlinks true
+        shell: bash
+
       - uses: actions/checkout@v4
+
+      - name: Enable Windows Developer Mode
+        shell: pwsh
+        run: |
+          reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /v "AllowDevelopmentWithoutDevLicense" /d 1 /f
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
