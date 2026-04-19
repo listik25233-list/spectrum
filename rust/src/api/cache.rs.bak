@@ -1,0 +1,64 @@
+use std::fs;
+use std::path::Path;
+use reqwest::Client;
+use std::io::Write;
+
+pub struct DownloadProgress {
+    pub total: u64,
+    pub received: u64,
+}
+
+pub async fn download_to(url: String, path: String) -> anyhow::Result<()> {
+    let client = Client::new();
+    let mut resp = client.get(&url).send().await?;
+    
+    if !resp.status().is_success() {
+        return Err(anyhow::anyhow!("Download failed with status: {}", resp.status()));
+    }
+
+    // Ensure directory exists
+    if let Some(parent) = Path::new(&path).parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    let mut file = fs::File::create(&path)?;
+    while let Some(chunk) = resp.chunk().await? {
+        file.write_all(&chunk)?;
+    }
+
+    Ok(())
+}
+
+pub fn check_cache_exists(path: String) -> bool {
+    Path::new(&path).exists()
+}
+
+pub fn clear_old_cache(directory: String, max_size_bytes: u64) -> anyhow::Result<()> {
+    let mut entries: Vec<_> = fs::read_dir(directory)?
+        .filter_map(|e| e.ok())
+        .collect();
+    
+    // Sort by modified time (oldest first)
+    entries.sort_by_key(|e| e.metadata().and_then(|m| m.modified()).ok());
+
+    let mut total_size = 0u64;
+    for entry in &entries {
+        if let Ok(metadata) = entry.metadata() {
+            total_size += metadata.len();
+        }
+    }
+
+    for entry in entries {
+        if total_size <= max_size_bytes {
+            break;
+        }
+        if let Ok(metadata) = entry.metadata() {
+            let size = metadata.len();
+            if fs::remove_file(entry.path()).is_ok() {
+                total_size -= size;
+            }
+        }
+    }
+
+    Ok(())
+}

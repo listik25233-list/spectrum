@@ -1,0 +1,100 @@
+Changing current working directory to: /home/listik/Spectrum
+Launching lib/main.dart on Linux in debug mode...
+Building Linux application...                                   
+✓ Built build/linux/x64/debug/bundle/spectrum
+
+(com.spectrum.spectrum:168275): Atk-CRITICAL **: 17:00:15.909: atk_socket_embed: assertion 'plug_id != NULL' failed
+Gdk-Message: 17:00:16.356: Unable to load  from the cursor theme
+package:media_kit_libs_linux registered.
+APPLICATION STARTING...
+Initialization step: MediaKit
+Syncing files to device Linux...                                
+Initialization step: AudioService
+Syncing files to device Linux...                                    88ms
+
+Flutter run key commands.
+r Hot reload. 🔥🔥🔥
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on Linux is available at: http://127.0.0.1:37433/Q0fFPNTX350=/
+The Flutter DevTools debugger and profiler on Linux is available at: http://127.0.0.1:37433/Q0fFPNTX350=/devtools/?uri=ws://127.0.0.1:37433/Q0fFPNTX350=/ws
+Initialization step: Isar
+╔══════════════════════════════════════════════════════╗
+║                 ISAR CONNECT STARTED                 ║
+╟──────────────────────────────────────────────────────╢
+║         Open the link to connect to the Isar         ║
+║        Inspector while this build is running.        ║
+╟──────────────────────────────────────────────────────╢
+║ https://inspect.isar.dev/3.1.0+1/#/37433/Q0fFPNTX350 ║
+╚══════════════════════════════════════════════════════╝
+media_kit: NativeReferenceHolder: Allocated 94514922761296
+Initialization step: SoLoud (Visualization)
+Initialization step: Storage Cleanup
+Initialization complete.
+
+══╡ EXCEPTION CAUGHT BY IMAGE RESOURCE SERVICE ╞════════════════════════════════════════════════════
+The following HttpExceptionWithStatus was thrown resolving an image codec:
+HttpException: Invalid statusCode: 404, uri =
+https://t.scdn.co/images/3099b38140494451af986fbc90847942.png
+
+When the exception was thrown, this was the stack
+
+Image provider:
+  CachedNetworkImageProvider("https://t.scdn.co/images/3099b38140494451af986fbc90847942.png", scale:
+  1.0)
+Image key:
+  CachedNetworkImageProvider("https://t.scdn.co/images/3099b38140494451af986fbc90847942.png", scale:
+  1.0)
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+[AudioPlayerService] playTrack (1) called for: playingtheangel — мармеладное драже
+[AudioPlayerService] Applying ReplayGain: -4.11dB
+[AudioPlayerService] Filter Chain: volume=-4.11dB
+[AudioPlayerService] Playing from explicitly saved local path: /home/listik/Документы/spectrum_music/GAWI2ccAGkc.mp4
+[AudioPlayerService] Setting player source to: /home/listik/Документы/spectrum_music/GAWI2ccAGkc.mp4
+[AudioPlayerService] Applying ReplayGain: -4.11dB
+[AudioPlayerService] Filter Chain: volume=-4.11dB
+[AudioPlayerService] Player started successfully.
+[AudioPlayerService] Rust cover processing failed: AnyhowException(No cover art found
+
+Stack backtrace:
+   0: anyhow::error::<impl anyhow::Error>::msg
+             at /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/anyhow-1.0.102/src/backtrace.rs:10:14
+   1: anyhow::__private::format_err
+             at /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/anyhow-1.0.102/src/lib.rs:687:13
+   2: rust_lib_spectrum::api::image_processor::extract_and_process_cover::{{closure}}
+             at ./rust/src/api/image_processor.rs:75:24
+   3: core::option::Option<T>::ok_or_else
+             at /rustc/e408947bfd200af42db322daf0fadfe7e26d3bd1/library/core/src/option.rs:1369:25
+   4: rust_lib_spectrum::api::image_processor::extract_and_process_cover
+             at ./rust/src/api/image_processor.rs:75:10
+   5: rust_lib_spectrum::frb_generated::wire__crate__api__image_processor__extract_and_process_cover_impl::{{closure}}::{{closure}}::{{closure}}
+             at ./rust/src/frb_generated.rs:254:41
+   6: rust_lib_spectrum::frb_generated::wire__crate__api__image_processor__extract_and_process_cover_impl::{{closure}}::{{closure}}
+             at ./rust/src/frb_generated.rs:253:21
+   7: <flutter_rust_bridge::handler::implementation::executor::SimpleExecutor<EL,TP,AR> as flutter_rust_bridge::handler::executor::Executor>::execute_normal::{{closure}}::{{closure}}
+             at /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/flutter_rust_bridge-2.7.0/src/handler/implementation/executor.rs:74:31
+   8: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/e408947bfd200af42db322daf0fadfe7e26d3bd1/library/core/src/panic/unwind_safe.rs:274:9
+   9: std::panicking::catch_unwind::do_call
+             at /rustc/e408947bfd200af42db322daf0fadfe7e26d3bd1/library/std/src/panicking.rs:581:40
+  10: __rust_try
+  11: std::panicking::catch_unwind
+             at /rustc/e408947bfd200af42db322daf0fadfe7e26d3bd1/library/std/src/panicking.rs:544:19
+  12: std::panic::catch_unwind
+             at /rustc/e408947bfd200af42db322daf0fadfe7e26d3bd1/library/std/src/panic.rs:359:14
+  13: flutter_rust_bridge::misc::panic_backtrace::PanicBacktrace::catch_unwind
+             at /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/flutter_rust_bridge-2.7.0/src/misc/panic_backtrace.rs:30:9
+  14: <flutter_rust_bridge::handler::implementation::executor::SimpleExecutor<EL,TP,AR> as flutter_rust_bridge::handler::executor::Executor>::execute_normal::{{closure}}
+             at /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/flutter_rust_bridge-2.7.0/src/handler/implementation/executor.rs:69:37
+  15: <F as threadpool::FnBox>::call_box
+             at /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/threadpool-1.8.1/src/lib.rs:95:9
+  16: threadpool::spawn_in_pool::{{closure}}
+             at /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/threadpool-1.8.1/src/lib.rs:769:21
+  17: std::sys::backtrace::__rust_begin_short_backtrace
+             at /rustc/e408947bfd200af42db322daf0fadfe7e26d3bd1/library/std/src/sys/backtrace.rs:166:18
+  18: std::thread::lifecycle::spawn_unchecked::{{closure}}::{{closure}}

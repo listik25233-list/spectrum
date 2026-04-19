@@ -1,0 +1,28 @@
+use crate::api::simple::{SpectrumTrack, search_tracks};
+use crate::api::metadata::score_match;
+
+pub async fn find_best_match(original: SpectrumTrack, source: String) -> Option<SpectrumTrack> {
+    let query = format!("{} {}", original.title, original.artist);
+    
+    // 1. Search for candidates
+    let mut candidates = search_tracks(query, source).await;
+    
+    if candidates.is_empty() {
+        return None;
+    }
+
+    // 2. Score and Sort
+    candidates.sort_by(|a, b| {
+        let score_a = score_match(&original, a);
+        let score_b = score_match(&original, b);
+        score_b.partial_cmp(&score_a).unwrap_or(std::cmp::Ordering::Equal)
+    });
+
+    // 3. Return the best candidate if it passes a threshold (e.g., 60 points)
+    let best = candidates.first().cloned()?;
+    if score_match(&original, &best) >= 60.0 {
+        Some(best)
+    } else {
+        None
+    }
+}

@@ -1,0 +1,28 @@
+pub struct AudioProcessor {
+    pub restoration_enabled: bool,
+    pub volume_db: f64,
+}
+
+impl AudioProcessor {
+    pub fn generate_mpv_af_string(&self) -> String {
+        let mut filters = Vec::new();
+
+        if self.restoration_enabled {
+            // High-quality restoration chain
+            filters.push("bass=gain=1.2:frequency=100");
+            filters.push("treble=gain=0.3:frequency=12000");
+            filters.push("lowpass=f=20000");
+            filters.push("alimiter=limit=0.95:level_out=0.9");
+        }
+
+        // Add volume adjustment (normalization)
+        // filters.push(format!("volume=volume={}dB", self.volume_db));
+
+        filters.join(",")
+    }
+}
+
+pub fn get_restoration_preset() -> String {
+    // Return a standard high-fidelity filter chain for the player
+    "bass=gain=1.2:frequency=100,treble=gain=0.3:frequency=12000,lowpass=f=20000,alimiter=limit=0.95:level_out=0.9".to_string()
+}

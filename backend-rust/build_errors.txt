@@ -1,0 +1,157 @@
+   Compiling backend-rust v0.1.0 (/home/listik/Spectrum/backend-rust)
+error[E0609]: no field `is_playing` on type `&mut JamSession`
+   --> src/jam.rs:107:21
+    |
+107 |             session.is_playing = is_playing.as_bool().unwrap_or(false);
+    |                     ^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `id`, `members`, `current_track`, `shared_queue`, `last_update`
+
+error[E0609]: no field `position_ms` on type `&mut JamSession`
+   --> src/jam.rs:110:21
+    |
+110 |             session.position_ms = position_ms.as_i64().unwrap_or(0);
+    |                     ^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `id`, `members`, `current_track`, `shared_queue`, `last_update`
+
+error[E0308]: mismatched types
+   --> src/jam.rs:121:51
+    |
+121 |         let _ = io.to(id).emit("session-updated", session_clone);
+    |                           ----                    ^^^^^^^^^^^^^ expected `&_`, found `JamSession`
+    |                           |
+    |                           arguments to this method are incorrect
+    |
+    = note: expected reference `&_`
+                  found struct `JamSession`
+note: method defined here
+   --> /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/socketioxide-0.15.2/src/operators.rs:755:12
+    |
+755 |     pub fn emit<T: ?Sized + Serialize>(
+    |            ^^^^
+help: consider borrowing here
+    |
+121 |         let _ = io.to(id).emit("session-updated", &session_clone);
+    |                                                   +
+
+error[E0308]: mismatched types
+   --> src/jam.rs:143:59
+    |
+143 |                 let _ = io.to(id).emit("session-updated", session_clone);
+    |                                   ----                    ^^^^^^^^^^^^^ expected `&_`, found `JamSession`
+    |                                   |
+    |                                   arguments to this method are incorrect
+    |
+    = note: expected reference `&_`
+                  found struct `JamSession`
+note: method defined here
+   --> /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/socketioxide-0.15.2/src/operators.rs:755:12
+    |
+755 |     pub fn emit<T: ?Sized + Serialize>(
+    |            ^^^^
+help: consider borrowing here
+    |
+143 |                 let _ = io.to(id).emit("session-updated", &session_clone);
+    |                                                           +
+
+warning: variable does not need to be mutable
+  --> src/routes/stream.rs:19:9
+   |
+19 |     let mut child = Command::new("yt-dlp")
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+error[E0277]: the trait bound `SocketIo: FromRef<Arc<std::sync::RwLock<HashMap<std::string::String, JamSession>>>>` is not satisfied
+    --> src/jam.rs:159:51
+     |
+ 159 |         .route("/update/:id", axum::routing::post(update_session))
+     |                               ------------------- ^^^^^^^^^^^^^^ the trait `FromRef<Arc<std::sync::RwLock<HashMap<std::string::String, JamSession>>>>` is not implemented for `SocketIo`
+     |                               |
+     |                               required by a bound introduced by this call
+     |
+help: the following other types implement trait `Handler<T, S>`
+    --> /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.7.9/src/routing/method_routing.rs:1309:1
+     |
+1309 | / impl<S> Handler<(), S> for MethodRouter<S>
+1310 | | where
+1311 | |     S: Clone + 'static,
+     | |_______________________^ `MethodRouter<S>` implements `Handler<(), S>`
+     |
+    ::: /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.7.9/src/handler/mod.rs:303:1
+     |
+ 303 | / impl<H, S, T, L> Handler<T, S> for Layered<L, H, T, S>
+ 304 | | where
+ 305 | |     L: Layer<HandlerService<H, T, S>> + Clone + Send + 'static,
+ 306 | |     H: Handler<T, S>,
+...    |
+ 310 | |     T: 'static,
+ 311 | |     S: 'static,
+     | |_______________^ `axum::handler::Layered<L, H, T, S>` implements `Handler<T, S>`
+     = note: required for `axum::extract::State<SocketIo>` to implement `FromRequestParts<Arc<std::sync::RwLock<HashMap<std::string::String, JamSession>>>>`
+     = note: required for `fn(Path<String>, State<Arc<...>>, ..., ...) -> ... {update_session}` to implement `Handler<(ViaRequest, Path<String>, State<Arc<...>>, ..., ...), ...>`
+note: required by a bound in `post`
+    --> /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.7.9/src/routing/method_routing.rs:166:16
+     |
+ 166 |             H: Handler<T, S>,
+     |                ^^^^^^^^^^^^^ required by this bound in `post`
+...
+ 443 | top_level_handler_fn!(post, POST);
+     | ---------------------------------
+     | |                     |
+     | |                     required by a bound in this function
+     | in this macro invocation
+     = note: the full name for the type has been written to '/home/listik/Spectrum/backend-rust/target/release/deps/backend_rust-4b9f1fc49c6e8ef3.long-type-14592944060741165555.txt'
+     = note: consider using `--verbose` to print the full type name to the console
+     = note: this error originates in the macro `top_level_handler_fn` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `SocketIo: FromRef<Arc<std::sync::RwLock<HashMap<std::string::String, JamSession>>>>` is not satisfied
+    --> src/jam.rs:160:54
+     |
+ 160 |         .route("/add-track/:id", axum::routing::post(add_track))
+     |                                  ------------------- ^^^^^^^^^ the trait `FromRef<Arc<std::sync::RwLock<HashMap<std::string::String, JamSession>>>>` is not implemented for `SocketIo`
+     |                                  |
+     |                                  required by a bound introduced by this call
+     |
+help: the following other types implement trait `Handler<T, S>`
+    --> /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.7.9/src/routing/method_routing.rs:1309:1
+     |
+1309 | / impl<S> Handler<(), S> for MethodRouter<S>
+1310 | | where
+1311 | |     S: Clone + 'static,
+     | |_______________________^ `MethodRouter<S>` implements `Handler<(), S>`
+     |
+    ::: /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.7.9/src/handler/mod.rs:303:1
+     |
+ 303 | / impl<H, S, T, L> Handler<T, S> for Layered<L, H, T, S>
+ 304 | | where
+ 305 | |     L: Layer<HandlerService<H, T, S>> + Clone + Send + 'static,
+ 306 | |     H: Handler<T, S>,
+...    |
+ 310 | |     T: 'static,
+ 311 | |     S: 'static,
+     | |_______________^ `axum::handler::Layered<L, H, T, S>` implements `Handler<T, S>`
+     = note: required for `axum::extract::State<SocketIo>` to implement `FromRequestParts<Arc<std::sync::RwLock<HashMap<std::string::String, JamSession>>>>`
+     = note: required for `fn(Path<String>, State<Arc<RwLock<...>>>, ..., ...) -> ... {add_track}` to implement `Handler<(ViaRequest, Path<String>, State<Arc<...>>, ..., ...), ...>`
+note: required by a bound in `post`
+    --> /home/listik/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.7.9/src/routing/method_routing.rs:166:16
+     |
+ 166 |             H: Handler<T, S>,
+     |                ^^^^^^^^^^^^^ required by this bound in `post`
+...
+ 443 | top_level_handler_fn!(post, POST);
+     | ---------------------------------
+     | |                     |
+     | |                     required by a bound in this function
+     | in this macro invocation
+     = note: the full name for the type has been written to '/home/listik/Spectrum/backend-rust/target/release/deps/backend_rust-4b9f1fc49c6e8ef3.long-type-11604154349052147817.txt'
+     = note: consider using `--verbose` to print the full type name to the console
+     = note: this error originates in the macro `top_level_handler_fn` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+Some errors have detailed explanations: E0277, E0308, E0609.
+For more information about an error, try `rustc --explain E0277`.
+warning: `backend-rust` (bin "backend-rust") generated 1 warning
+error: could not compile `backend-rust` (bin "backend-rust") due to 6 previous errors; 1 warning emitted

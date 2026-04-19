@@ -1,0 +1,55 @@
+name: Build Windows Release
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+            flutter-version: '3.x'
+            channel: 'stable'
+
+      - name: Install dependencies
+        run: |
+          flutter config --enable-windows-desktop
+          flutter pub get
+
+      - name: Clean build environment
+        run: flutter clean
+
+      - name: Code generation (Isar)
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+        continue-on-error: false
+
+      - name: Build Windows
+        run: flutter build windows --release
+
+      - name: Package Release
+        shell: pwsh
+        run: |
+          $releaseDir = "build/windows/x64/runner/Release"
+          if (-not (Test-Path $releaseDir)) {
+             $releaseDir = "build/windows/runner/Release" # Fallback
+          }
+          if (Test-Path $releaseDir) {
+            Compress-Archive -Path "$releaseDir\*" -DestinationPath spectrum_windows.zip
+          } else {
+            Write-Error "Release directory not found anywhere!"
+            exit 1
+          }
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: spectrum-windows-release
+          path: spectrum_windows.zip
