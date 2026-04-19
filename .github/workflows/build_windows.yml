@@ -15,20 +15,29 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-            flutter-version: '3.x'
+            flutter-version: 'latest'
             channel: 'stable'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Install LLVM
+        run: choco install llvm -y
 
       - name: Install dependencies
         run: |
           flutter config --enable-windows-desktop
           flutter pub get
 
-      - name: Clean build environment
-        run: flutter clean
+      - name: Install FRB Codegen
+        run: cargo install flutter_rust_bridge_codegen --version 2.7.0 --force
 
-      - name: Code generation (Isar)
+      - name: Code generation (Isar & FRB)
         run: |
           dart run build_runner build --delete-conflicting-outputs
+          flutter_rust_bridge_codegen generate
         continue-on-error: false
 
       - name: Build Windows
@@ -39,9 +48,10 @@ jobs:
         run: |
           $releaseDir = "build/windows/x64/runner/Release"
           if (-not (Test-Path $releaseDir)) {
-             $releaseDir = "build/windows/runner/Release" # Fallback
+             $releaseDir = "build/windows/runner/Release" 
           }
           if (Test-Path $releaseDir) {
+            # Copy MSVC runtime if needed, though usually included in installer or present on Win
             Compress-Archive -Path "$releaseDir\*" -DestinationPath spectrum_windows.zip
           } else {
             Write-Error "Release directory not found anywhere!"
