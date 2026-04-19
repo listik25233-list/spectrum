@@ -19,22 +19,23 @@ class IsarService {
   static Future<void> init() async {
     String? finalPath;
     try {
-      final supportDir = await getApplicationSupportDirectory()
-          .timeout(const Duration(seconds: 3));
-      finalPath = supportDir.path;
+      // Use ApplicationSupport on Linux/Android, but for Windows we want a more stable path
+      final dir = await getApplicationSupportDirectory();
+      finalPath = '${dir.path}${Platform.isWindows ? '\\db' : '/db'}';
     } catch (e) {
-      finalPath = 'C:\\spectrum_db';
+      // Ultimate fallback: Documents folder (always has write access)
+      final docDir = await getApplicationDocumentsDirectory();
+      finalPath = '${docDir.path}${Platform.isWindows ? '\\Spectrum\\db' : '/Spectrum/db'}';
     }
 
-    // Try to open first time
     try {
       _isar = await _openIsar(finalPath);
     } catch (e) {
-      // If failed (MdbxError 775), try a "safe" path in the root of C:
-      const fallbackPath = 'C:\\spectrum_db';
-      if (finalPath == fallbackPath) rethrow; // Already tried fallback
-
-      print('Isar failed at $finalPath, trying fallback: $fallbackPath');
+      // Final attempt with a unique fallback if the above is locked
+      final tempDir = await getTemporaryDirectory();
+      final fallbackPath = '${tempDir.path}${Platform.isWindows ? '\\spectrum_db_emergency' : '/spectrum_db_emergency'}';
+      
+      print('Isar normal init failed: $e. Trying emergency path: $fallbackPath');
       _isar = await _openIsar(fallbackPath);
     }
   }
